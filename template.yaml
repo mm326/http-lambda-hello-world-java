@@ -1,0 +1,14 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Hello World lambda
+
+Resources:
+
+  HelloWorldLambdaDev:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: java11
+      Handler: com.muadmo.HelloWorldHandler::handleInput
+      MemorySize: 512
+      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.jar
+      AutoPublishAlias: dev
