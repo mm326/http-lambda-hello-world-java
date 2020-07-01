@@ -13,6 +13,11 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
+import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
@@ -33,10 +38,15 @@ public class HelloWorldServiceTest {
    }
 
     @Test
-    void shouldReturnMyInputInCapitals() {
-        String actualOutout = handler.inputToUpperCase("muad");
-        String expectedOutput = "Hello, MUAD!";
-        assertEquals(expectedOutput, actualOutout);
+    void shouldReturnMyInputInCapitals() throws JsonMappingException, JsonProcessingException {
+        String expectedJson = "{\"name\":\"MUAD\"}";
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
+        String inputJson = "{\"name\":\"muad\"}";
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(inputJson);
+
+        APIGatewayProxyResponseEvent actualResponse = handler.inputToUpperCase(input);
+
+        assertEquals(expectedResponse, actualResponse);
     }
 
 

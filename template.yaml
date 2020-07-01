@@ -11,8 +11,15 @@ Resources:
       Timeout: 30
       Handler: com.muadmo.handler.HelloWorldHandler::handle
       MemorySize: 512
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.jar
+      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: dev
+      Events:
+        MyApiDev:
+          Type: Api
+          StageName: Dev
+          Properties:
+            Path: /name
+            Method: post
       Environment:
         Variables:
           NAME_TABLE: !Ref NameTableDev
