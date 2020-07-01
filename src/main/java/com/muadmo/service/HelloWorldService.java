@@ -1,4 +1,4 @@
-package com.muadmo;
+package com.muadmo.service;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ public class HelloWorldService {
         this.dynamoDbClient = dynamoDBClient;
     }
 
-    public String handleInput(String input) {
+    public String inputToUpperCase(String input) {
         String upperCaseName = "Hello, " + input.toUpperCase() + "!";
         putItemInTable(upperCaseName);
         return upperCaseName;

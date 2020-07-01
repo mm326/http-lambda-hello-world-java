@@ -1,4 +1,4 @@
-package com.muadmo;
+package com.muadmo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,24 +32,17 @@ public class HelloWorldServiceTest {
    void setUp() {
        handler = new HelloWorldService(dynamoDbClient);
    }
-    @Test
-    void shouldReturnHelloAndInput() {
-        String actualOutput = handler.handleInput("Sam") ;
-        String expectedOutput = "Hello, SAM!";
-        assertEquals(expectedOutput, actualOutput);
-    }
 
     @Test
-    void shouldReturnMyInputInCapital() {
-        String actualOutout = handler.handleInput("muad");
+    void shouldReturnMyInputInCapitals() {
+        String actualOutout = handler.inputToUpperCase("muad");
         String expectedOutput = "Hello, MUAD!";
         assertEquals(expectedOutput, actualOutout);
     }
 
 
     @Test
-    void shouldPutItemInTable() throws Exception {
-        HelloWorldService handler = new HelloWorldService(dynamoDbClient);
+    void shouldPutItemInTable() {
         handler.putItemInTable("MUAD");
         Map<String, AttributeValue> expectedItem = Map.of("name", AttributeValue.builder().s("MUAD").build());
         verify(dynamoDbClient).putItem(argumentCaptor.capture());

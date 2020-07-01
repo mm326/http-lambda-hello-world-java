@@ -8,7 +8,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: java11
-      Handler: com.muadmo.HelloWorldHandler::handleInput
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       MemorySize: 512
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.jar
       AutoPublishAlias: dev
