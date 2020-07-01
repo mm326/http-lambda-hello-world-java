@@ -12,3 +12,11 @@ Resources:
       MemorySize: 512
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.jar
       AutoPublishAlias: dev
+
+    NameTableDev:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+          Name: name
+          Type: String
+      TableName: NameTable
