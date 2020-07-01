@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 public class HelloWorldService {
 
     private final DynamoDbClient dynamoDbClient;
+    private static String TABLE_NAME = System.getenv("NAME_TABLE");
 
     public HelloWorldService(DynamoDbClient dynamoDBClient) {
         this.dynamoDbClient = dynamoDBClient;
@@ -21,10 +22,10 @@ public class HelloWorldService {
     }
 
     public void putItemInTable(String name) {
-        Map<String, AttributeValue> item = Map.of("name", AttributeValue.builder().s(name).build());
+        Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s(name).build());
         PutItemRequest putItemRequest = PutItemRequest.builder()
-                .tableName("nameTable")
-                .conditionExpression("attribute_not_exists(name)")
+                .tableName(TABLE_NAME)
+                .conditionExpression("attribute_not_exists(nameId)")
                 .item(item)
                 .build();
         dynamoDbClient.putItem(putItemRequest);

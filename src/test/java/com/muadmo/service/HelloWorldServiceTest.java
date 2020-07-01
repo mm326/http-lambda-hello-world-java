@@ -1,6 +1,7 @@
 package com.muadmo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
@@ -11,8 +12,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.Mockito.verify;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
@@ -44,7 +43,7 @@ public class HelloWorldServiceTest {
     @Test
     void shouldPutItemInTable() {
         handler.putItemInTable("MUAD");
-        Map<String, AttributeValue> expectedItem = Map.of("name", AttributeValue.builder().s("MUAD").build());
+        Map<String, AttributeValue> expectedItem = Map.of("nameId", AttributeValue.builder().s("MUAD").build());
         verify(dynamoDbClient).putItem(argumentCaptor.capture());
         assertEquals(expectedItem, argumentCaptor.getValue().item());
     }

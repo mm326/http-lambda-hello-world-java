@@ -16,7 +16,7 @@
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<version.junit-jupiter>5.5.2</version.junit-jupiter>
-		<version.aws-java-sdk>2.13.48</version.aws-java-sdk>
+		<version.aws-java-sdk>2.13.47</version.aws-java-sdk>
 		<version.mockito>3.1.0</version.mockito>
 	</properties>
 
@@ -55,6 +55,19 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.2</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

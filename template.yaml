@@ -8,15 +8,22 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Runtime: java11
+      Timeout: 30
       Handler: com.muadmo.handler.HelloWorldHandler::handle
       MemorySize: 512
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.jar
       AutoPublishAlias: dev
+      Environment:
+        Variables:
+          NAME_TABLE: !Ref NameTableDev
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NameTableDev
 
-    NameTableDev:
+  NameTableDev:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
-          Name: name
-          Type: String
-      TableName: NameTable
+        Name: nameId
+        Type: String
+        
