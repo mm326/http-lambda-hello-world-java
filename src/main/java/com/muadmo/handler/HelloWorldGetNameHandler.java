@@ -8,14 +8,12 @@ import com.muadmo.service.HelloWorldService;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-public class HelloWorldHandler {
+public class HelloWorldGetNameHandler {
 
     private DynamoDbClient dynamoDbClient = DynamoDbClient.builder().build();
 
-    public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent apiGatewayProxyRequestEvent)
-            throws JsonMappingException, JsonProcessingException {
+    public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
         HelloWorldService helloWorldService = new HelloWorldService(dynamoDbClient);
-        return helloWorldService.inputToUpperCase(apiGatewayProxyRequestEvent);
+        return helloWorldService.getNameFromDatabase(request);
     }
-
 }
