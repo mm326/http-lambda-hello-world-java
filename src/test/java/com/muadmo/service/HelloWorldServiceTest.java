@@ -1,7 +1,9 @@
 package com.muadmo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
@@ -21,6 +23,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
+import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class HelloWorldServiceTest {
@@ -52,10 +56,24 @@ public class HelloWorldServiceTest {
 
     @Test
     void shouldPutItemInTable() {
-        handler.putItemInTable("MUAD");
-        Map<String, AttributeValue> expectedItem = Map.of("nameId", AttributeValue.builder().s("MUAD").build());
+        handler.putItemInTable("muad");
+        Map<String, AttributeValue> expectedItem = Map.of("nameId", AttributeValue.builder().s("muad").build());
         verify(dynamoDbClient).putItem(argumentCaptor.capture());
         assertEquals(expectedItem, argumentCaptor.getValue().item());
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldGetNameFromDatabase() {
+            String expectedJson = "{\"name\":\"MUAD\"}";
+            APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
+            APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withQueryStringParameters(Map.of("id", "muad"));
+            Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("MUAD").build());
+            
+            QueryResponse response = QueryResponse.builder().count(1).items(item).build();
+            when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
+            APIGatewayProxyResponseEvent actualResponse = handler.getNameFromDatabase(input);
+            assertEquals(expectedResponse, actualResponse);
     }
 
 }

@@ -2,15 +2,18 @@ AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 Description: Hello World lambda
 
+Globals:
+  Function:
+    Runtime: java11
+    MemorySize: 512
+    Timeout: 10
+    
 Resources:
 
-  HelloWorldLambdaDev:
+  HelloWorldPostNameLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Runtime: java11
-      Timeout: 30
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
-      MemorySize: 512
+      Handler: com.muadmo.handler.HelloWorldPostNameHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: dev
       Events:
@@ -20,6 +23,26 @@ Resources:
           Properties:
             Path: /name
             Method: post
+      Environment:
+        Variables:
+          NAME_TABLE: !Ref NameTableDev
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NameTableDev
+            
+  HelloWorldGetNameLambdaDev:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.muadmo.handler.HelloWorldGetNameHandler::handle
+      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      AutoPublishAlias: dev
+      Events:
+        MyApiDev:
+          Type: Api
+          StageName: Dev
+          Properties:
+            Path: /name
+            Method: get
       Environment:
         Variables:
           NAME_TABLE: !Ref NameTableDev
