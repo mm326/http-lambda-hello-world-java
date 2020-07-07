@@ -69,6 +69,26 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref NameTableDev
+            
+  HelloWorldDeleteNameLambdaDev:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.muadmo.handler.HelloWorldDeleteNameHandler::handle
+      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      AutoPublishAlias: dev
+      Events:
+        MyApiDev:
+          Type: Api
+          StageName: Dev
+          Properties:
+            Path: /names/{name}
+            Method: delete
+      Environment:
+        Variables:
+          NAME_TABLE: !Ref NameTableDev
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NameTableDev
 
   NameTableDev:
     Type: AWS::Serverless::SimpleTable

@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
@@ -70,5 +71,15 @@ public class HelloWorldService {
 
     private JSONObject makeJson(String n) {
         return new JSONObject().accumulate("name", n);
+    }
+
+    public APIGatewayProxyResponseEvent deleteNameFromDatabase(APIGatewayProxyRequestEvent request) {
+      Map<String, String> pathParameters = request.getPathParameters();
+      String name = pathParameters.get("name");
+      DeleteItemRequest deleteRequest = DeleteItemRequest.builder().tableName(TABLE_NAME)
+              .key(Map.of("nameId", AttributeValue.builder().s(name).build()))
+              .build();
+      dynamoDbClient.deleteItem(deleteRequest);
+      return new APIGatewayProxyResponseEvent().withStatusCode(204);
     }
 }
