@@ -1,7 +1,9 @@
 package com.muadmo.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
@@ -21,13 +23,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-<<<<<<< Updated upstream
-=======
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
->>>>>>> Stashed changes
 
 @ExtendWith(MockitoExtension.class)
 public class HelloWorldServiceTest {
@@ -64,8 +63,6 @@ public class HelloWorldServiceTest {
         verify(dynamoDbClient).putItem(argumentCaptor.capture());
         assertEquals(expectedItem, argumentCaptor.getValue().item());
     }
-<<<<<<< Updated upstream
-=======
     
     @Test
     @SuppressWarnings("unchecked")
@@ -95,6 +92,5 @@ public class HelloWorldServiceTest {
             APIGatewayProxyResponseEvent actualResponse = handler.getAllNamesFromDatabase(input);
             assertEquals(expectedResponse, actualResponse);
     }
->>>>>>> Stashed changes
 
 }
