@@ -21,7 +21,7 @@ Resources:
           Type: Api
           StageName: Dev
           Properties:
-            Path: /name
+            Path: /
             Method: post
       Environment:
         Variables:
@@ -41,7 +41,27 @@ Resources:
           Type: Api
           StageName: Dev
           Properties:
-            Path: /name
+            Path: /
+            Method: get
+      Environment:
+        Variables:
+          NAME_TABLE: !Ref NameTableDev
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref NameTableDev
+
+  HelloWorldGetAllNameLambdaDev:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.muadmo.handler.HelloWorldGetAllNameHandler::handle
+      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      AutoPublishAlias: dev
+      Events:
+        MyApiDev:
+          Type: Api
+          StageName: Dev
+          Properties:
+            Path: /names
             Method: get
       Environment:
         Variables:
