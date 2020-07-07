@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
@@ -91,6 +93,16 @@ public class HelloWorldServiceTest {
             when(dynamoDbClient.scan(any(ScanRequest.class))).thenReturn(scanResponse);
             APIGatewayProxyResponseEvent actualResponse = handler.getAllNamesFromDatabase(input);
             assertEquals(expectedResponse, actualResponse);
+    }
+    
+    @Test
+    void shouldDeleteNameFromDatabase() {
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("names", "alex"));
+        DeleteItemResponse deleteResponse = DeleteItemResponse.builder().attributes(Map.of("name", AttributeValue.builder().s("alex").build())).build();
+        when(dynamoDbClient.deleteItem(any(DeleteItemRequest.class))).thenReturn(deleteResponse);
+        APIGatewayProxyResponseEvent actualResponse = handler.deleteNameFromDatabase(input);
+        assertEquals(expectedResponse, actualResponse);
     }
 
 }
