@@ -14,7 +14,7 @@ public class HelloWorldPostUserHandler {
 
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
         HelloWorldService helloWorldService = new HelloWorldService(dynamoDbClient);
-        return helloWorldService.postData(request);
+        return helloWorldService.postUserToDataDatabase(request);
     }
 
 }

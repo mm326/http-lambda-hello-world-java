@@ -13,6 +13,6 @@ public class HelloWorldDeleteNameHandler {
 
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
         HelloWorldService helloWorldService = new HelloWorldService(dynamoDbClient);
-        return helloWorldService.deleteNameFromDatabase(request);
+        return helloWorldService.deleteUserFromDatabase(request);
     }
 }

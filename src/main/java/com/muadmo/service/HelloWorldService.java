@@ -38,7 +38,7 @@ public class HelloWorldService {
         dynamoDbClient.putItem(putItemRequest);
     }
 
-    public APIGatewayProxyResponseEvent getNameFromDatabase(APIGatewayProxyRequestEvent request) {
+    public APIGatewayProxyResponseEvent getUserFromDatabase(APIGatewayProxyRequestEvent request) {
         String name = request.getQueryStringParameters().getOrDefault("id", null);
         QueryRequest queryRequest = QueryRequest.builder().keyConditionExpression("nameId = :" + name)
                 .tableName(TABLE_NAME)
@@ -70,8 +70,31 @@ public class HelloWorldService {
         jsonObject.put("email", item.get("email").s());
         return jsonObject;
     }
+    
+    public APIGatewayProxyResponseEvent getAllUsersFromDatabase(APIGatewayProxyRequestEvent request) {
+        ScanRequest scanRequest = ScanRequest.builder().tableName(TABLE_NAME).projectionExpression("nameId, age, email").build();
+        ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
+       
+        List<JSONObject> jsonItems = scanResponse.items().stream()
+        .map(this::mapItemToJsonObject)
+        .collect(Collectors.toList());
+        
+        JSONObject body = new JSONObject();
+        
+        body.put("users", jsonItems);
+        System.out.println(body.toString());
+        return new APIGatewayProxyResponseEvent().withBody(body.toString()).withStatusCode(200);
+    }
 
-    public APIGatewayProxyResponseEvent deleteNameFromDatabase(APIGatewayProxyRequestEvent request) {
+    private JSONObject mapItemToJsonObject(Map<String, AttributeValue> item) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("nameId", item.get("nameId").s());
+        jsonObject.put("age", item.get("age").s());
+        jsonObject.put("email", item.get("email").s());
+        return jsonObject;
+    }
+
+    public APIGatewayProxyResponseEvent deleteUserFromDatabase(APIGatewayProxyRequestEvent request) {
         Map<String, String> pathParameters = request.getPathParameters();
         String name = pathParameters.get("nameId");
         DeleteItemRequest deleteRequest = DeleteItemRequest.builder().tableName(TABLE_NAME)
@@ -107,7 +130,7 @@ public class HelloWorldService {
         }
     }
 
-    public APIGatewayProxyResponseEvent postData(APIGatewayProxyRequestEvent request) {
+    public APIGatewayProxyResponseEvent postUserToDataDatabase(APIGatewayProxyRequestEvent request) {
         String body = request.getBody();
         Map<String, AttributeValue> items = mapBodyToItem(body);
         PutItemRequest putItemRequest = PutItemRequest.builder().tableName(TABLE_NAME)

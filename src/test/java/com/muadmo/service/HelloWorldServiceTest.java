@@ -49,8 +49,8 @@ public class HelloWorldServiceTest {
 
     @Test
     void shouldPutItemInTable() {
-        handler.putItemInTable("MUAD");
-        Map<String, AttributeValue> expectedItem = Map.of("nameId", AttributeValue.builder().s("MUAD").build());
+        handler.putItemInTable("TEST");
+        Map<String, AttributeValue> expectedItem = Map.of("nameId", AttributeValue.builder().s("TEST").build());
         verify(dynamoDbClient).putItem(argumentCaptor.capture());
         assertEquals(expectedItem, argumentCaptor.getValue().item());
     }
@@ -58,14 +58,14 @@ public class HelloWorldServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldGetNameFromDatabase() {
-            String expectedJson = "{\"name\":\"MUAD\"}";
+            String expectedJson = "{\"name\":\"TEST\"}";
             APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
-            APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withQueryStringParameters(Map.of("id", "muad"));
-            Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("MUAD").build());
+            APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withQueryStringParameters(Map.of("id", "TEST"));
+            Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("TEST").build());
             
             QueryResponse response = QueryResponse.builder().count(1).items(item).build();
             when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
-            APIGatewayProxyResponseEvent actualResponse = handler.getNameFromDatabase(input);
+            APIGatewayProxyResponseEvent actualResponse = handler.getUserFromDatabase(input);
             assertEquals(expectedResponse, actualResponse);
     }
     
@@ -86,17 +86,17 @@ public class HelloWorldServiceTest {
                     "email", AttributeValue.builder().s("test2@email.com").build());
             ScanResponse scanResponse = ScanResponse.builder().items(item1, item2).build();
             when(dynamoDbClient.scan(any(ScanRequest.class))).thenReturn(scanResponse);
-            APIGatewayProxyResponseEvent actualResponse = handler.getAllNamesFromDatabase(input);
+            APIGatewayProxyResponseEvent actualResponse = handler.getAllUsersFromDatabase(input);
             assertEquals(expectedResponse, actualResponse);
     }
     
     @Test
     void shouldDeleteNameFromDatabase() {
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
-        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "alex"));
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("names", "alex"));
         DeleteItemResponse deleteResponse = DeleteItemResponse.builder().attributes(Map.of("name", AttributeValue.builder().s("alex").build())).build();
         when(dynamoDbClient.deleteItem(any(DeleteItemRequest.class))).thenReturn(deleteResponse);
-        APIGatewayProxyResponseEvent actualResponse = handler.deleteNameFromDatabase(input);
+        APIGatewayProxyResponseEvent actualResponse = handler.deleteUserFromDatabase(input);
         assertEquals(expectedResponse, actualResponse);
     }
     
@@ -105,14 +105,14 @@ public class HelloWorldServiceTest {
     void shouldUpdateName() {
         String body = "{\"age\" : \"23\"}";
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
-        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(body).withPathParameters(Map.of("nameId", "alex"));
-        Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("alex").build());
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(body).withPathParameters(Map.of("nameId", "test"));
+        Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("test").build());
         
         QueryResponse response = QueryResponse.builder().count(1).items(item).build();
         when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
         
         UpdateItemResponse updateResponse = UpdateItemResponse.builder()
-                .attributes(Map.of("nameId", AttributeValue.builder().s("alex").build(), "age", AttributeValue.builder().s("24").build()))
+                .attributes(Map.of("nameId", AttributeValue.builder().s("test").build(), "age", AttributeValue.builder().s("24").build()))
                 .build();
         when(dynamoDbClient.updateItem(any(UpdateItemRequest.class))).thenReturn(updateResponse);
         
@@ -132,11 +132,10 @@ public class HelloWorldServiceTest {
         String inputJson = "{\"nameId\":\"muad\", \"age\":\"24\", \"email\":\"muad@email.com\"}";
         APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(inputJson);
         
-        APIGatewayProxyResponseEvent actualResponse = handler.postData(input);
+        APIGatewayProxyResponseEvent actualResponse = handler.postUserToDataDatabase(input);
 
         verify(dynamoDbClient).putItem(argumentCaptor.capture());
         assertEquals(expectedResponse, actualResponse);
         assertEquals(expectedItems , argumentCaptor.getAllValues().get(0).item());
     }
-
 }
