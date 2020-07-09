@@ -8,7 +8,7 @@ import com.muadmo.service.HelloWorldService;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-public class HelloWorldDeleteNameHandler {
+public class HelloWorldDeleteUserHandler {
     private DynamoDbClient dynamoDbClient = DynamoDbClient.builder().build();
 
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.muadmo.service.HelloWorldService;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
 
 public class HelloWorldUpdateUserHandler {
 
@@ -14,6 +15,10 @@ public class HelloWorldUpdateUserHandler {
 
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
         HelloWorldService helloWorldService = new HelloWorldService(dynamoDbClient);
-        return helloWorldService.updateNameFromDatabase(request);
+        try {
+            return helloWorldService.updateNameFromDatabase(request);
+        } catch (ConditionalCheckFailedException ex) {
+            return new APIGatewayProxyResponseEvent().withStatusCode(400);
+        }
     }
 }

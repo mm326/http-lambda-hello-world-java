@@ -46,24 +46,30 @@ public class HelloWorldServiceTest {
    void setUp() {
        handler = new HelloWorldService(dynamoDbClient);
    }
-
+    
     @Test
-    void shouldPutItemInTable() {
-        handler.putItemInTable("TEST");
-        Map<String, AttributeValue> expectedItem = Map.of("nameId", AttributeValue.builder().s("TEST").build());
-        verify(dynamoDbClient).putItem(argumentCaptor.capture());
-        assertEquals(expectedItem, argumentCaptor.getValue().item());
+    @SuppressWarnings("unchecked")
+    void shouldGetUserFromDatabase() {
+            String expectedJson = "{\"nameId\":\"test\",\"email\":\"test@email.com\"}";
+            APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
+            APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test"));
+            Map<String, AttributeValue> item = Map.of(
+                    "nameId", AttributeValue.builder().s("test").build(),
+                    "age", AttributeValue.builder().n("24").build(), 
+                    "email", AttributeValue.builder().s("test@email.com").build());
+            
+            QueryResponse response = QueryResponse.builder().count(1).items(item).build();
+            when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
+            APIGatewayProxyResponseEvent actualResponse = handler.getUserFromDatabase(input);
+            assertEquals(expectedResponse, actualResponse);
     }
     
     @Test
     @SuppressWarnings("unchecked")
-    void shouldGetNameFromDatabase() {
-            String expectedJson = "{\"name\":\"TEST\"}";
-            APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
-            APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withQueryStringParameters(Map.of("id", "TEST"));
-            Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("TEST").build());
-            
-            QueryResponse response = QueryResponse.builder().count(1).items(item).build();
+    void shouldReturn404ForUnknownGetUser() {
+            APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(404);
+            APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test2"));
+            QueryResponse response = QueryResponse.builder().count(0).build();
             when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
             APIGatewayProxyResponseEvent actualResponse = handler.getUserFromDatabase(input);
             assertEquals(expectedResponse, actualResponse);
@@ -90,10 +96,14 @@ public class HelloWorldServiceTest {
             assertEquals(expectedResponse, actualResponse);
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     void shouldDeleteNameFromDatabase() {
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
-        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("names", "alex"));
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "alex"));
+        Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("test").build());
+        QueryResponse response = QueryResponse.builder().count(1).items(item).build();
+        when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
         DeleteItemResponse deleteResponse = DeleteItemResponse.builder().attributes(Map.of("name", AttributeValue.builder().s("alex").build())).build();
         when(dynamoDbClient.deleteItem(any(DeleteItemRequest.class))).thenReturn(deleteResponse);
         APIGatewayProxyResponseEvent actualResponse = handler.deleteUserFromDatabase(input);
@@ -137,5 +147,18 @@ public class HelloWorldServiceTest {
         verify(dynamoDbClient).putItem(argumentCaptor.capture());
         assertEquals(expectedResponse, actualResponse);
         assertEquals(expectedItems , argumentCaptor.getAllValues().get(0).item());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldReturn404ForUnknownUser() {
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(404);
+        APIGatewayProxyRequestEvent request = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test4"));
+        QueryResponse response = QueryResponse.builder().count(0).build();
+        when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
+        
+        APIGatewayProxyResponseEvent actualResponse = handler.deleteUserFromDatabase(request);
+        assertEquals(expectedResponse, actualResponse);
+
     }
 }

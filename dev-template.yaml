@@ -15,7 +15,7 @@ Resources:
     Properties:
       Handler: com.muadmo.handler.HelloWorldPostUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -35,13 +35,13 @@ Resources:
     Properties:
       Handler: com.muadmo.handler.HelloWorldGetUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
           StageName: Dev
           Properties:
-            Path: /users/{nameId}
+            Path: /
             Method: get
       Environment:
         Variables:
@@ -55,7 +55,7 @@ Resources:
     Properties:
       Handler: com.muadmo.handler.HelloWorldGetAllUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -75,7 +75,7 @@ Resources:
     Properties:
       Handler: com.muadmo.handler.HelloWorldDeleteUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -95,7 +95,7 @@ Resources:
     Properties:
       Handler: com.muadmo.handler.HelloWorldUpdateUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -115,7 +115,7 @@ Resources:
     Properties:
       Handler: com.muadmo.handler.HelloWorldUpdateUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
