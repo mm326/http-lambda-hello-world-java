@@ -29,6 +29,8 @@ import software.amazon.awssdk.services.dynamodb.model.QueryRequest;
 import software.amazon.awssdk.services.dynamodb.model.QueryResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemResponse;
 
 @ExtendWith(MockitoExtension.class)
 public class HelloWorldServiceTest {
@@ -44,19 +46,6 @@ public class HelloWorldServiceTest {
    void setUp() {
        handler = new HelloWorldService(dynamoDbClient);
    }
-
-    @Test
-    void shouldReturnMyInputInCapitals() throws JsonMappingException, JsonProcessingException {
-        String expectedJson = "{\"name\":\"MUAD\"}";
-        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
-        String inputJson = "{\"name\":\"muad\"}";
-        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(inputJson);
-
-        APIGatewayProxyResponseEvent actualResponse = handler.inputToUpperCase(input);
-
-        assertEquals(expectedResponse, actualResponse);
-    }
-
 
     @Test
     void shouldPutItemInTable() {
@@ -83,12 +72,18 @@ public class HelloWorldServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void shouldGetAllNamesFromDatabase() {
-            String expectedJson = "[{\"name\":\"muad\"}, {\"name\":\"alex\"}]";
+            String expectedJson = "{\"users\":[{\"nameId\":\"test\",\"email\":\"test@email.com\"},{\"nameId\":\"test2\",\"email\":\"test2@email.com\"}]}";
             APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(200);
             APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPath("/names");
-            Map<String, AttributeValue> item1 = Map.of("nameId", AttributeValue.builder().s("muad").build());
-            Map<String, AttributeValue> item2 = Map.of("nameId", AttributeValue.builder().s("alex").build());
+            Map<String, AttributeValue> item1 = Map.of(
+                    "nameId", AttributeValue.builder().s("test").build(),
+                    "age", AttributeValue.builder().n("24").build(), 
+                    "email", AttributeValue.builder().s("test@email.com").build());
             
+            Map<String, AttributeValue> item2 = Map.of(
+                    "nameId", AttributeValue.builder().s("test2").build(),
+                    "age", AttributeValue.builder().n("41").build(), 
+                    "email", AttributeValue.builder().s("test2@email.com").build());
             ScanResponse scanResponse = ScanResponse.builder().items(item1, item2).build();
             when(dynamoDbClient.scan(any(ScanRequest.class))).thenReturn(scanResponse);
             APIGatewayProxyResponseEvent actualResponse = handler.getAllNamesFromDatabase(input);
@@ -98,11 +93,50 @@ public class HelloWorldServiceTest {
     @Test
     void shouldDeleteNameFromDatabase() {
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
-        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("names", "alex"));
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "alex"));
         DeleteItemResponse deleteResponse = DeleteItemResponse.builder().attributes(Map.of("name", AttributeValue.builder().s("alex").build())).build();
         when(dynamoDbClient.deleteItem(any(DeleteItemRequest.class))).thenReturn(deleteResponse);
         APIGatewayProxyResponseEvent actualResponse = handler.deleteNameFromDatabase(input);
         assertEquals(expectedResponse, actualResponse);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    void shouldUpdateName() {
+        String body = "{\"age\" : \"23\"}";
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(body).withPathParameters(Map.of("nameId", "alex"));
+        Map<String, AttributeValue> item = Map.of("nameId", AttributeValue.builder().s("alex").build());
+        
+        QueryResponse response = QueryResponse.builder().count(1).items(item).build();
+        when(dynamoDbClient.query(any(QueryRequest.class))).thenReturn(response);
+        
+        UpdateItemResponse updateResponse = UpdateItemResponse.builder()
+                .attributes(Map.of("nameId", AttributeValue.builder().s("alex").build(), "age", AttributeValue.builder().s("24").build()))
+                .build();
+        when(dynamoDbClient.updateItem(any(UpdateItemRequest.class))).thenReturn(updateResponse);
+        
+        APIGatewayProxyResponseEvent actualResponse = handler.updateNameFromDatabase(input);
+        assertEquals(expectedResponse, actualResponse);
+
+    }
+    
+    @Test
+    void shouldAddMultipleAttributesInPost() throws JsonMappingException, JsonProcessingException{
+        String expectedJson = "{\"nameId\":\"muad\", \"age\":\"24\", \"email\":\"muad@email.com\"}";
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withBody(expectedJson).withStatusCode(201);
+        Map<String, AttributeValue> expectedItems = Map.of(
+                "nameId", AttributeValue.builder().s("muad").build(),
+                "age", AttributeValue.builder().s("24").build(),
+                "email", AttributeValue.builder().s("muad@email.com").build());
+        String inputJson = "{\"nameId\":\"muad\", \"age\":\"24\", \"email\":\"muad@email.com\"}";
+        APIGatewayProxyRequestEvent input = new APIGatewayProxyRequestEvent().withBody(inputJson);
+        
+        APIGatewayProxyResponseEvent actualResponse = handler.postData(input);
+
+        verify(dynamoDbClient).putItem(argumentCaptor.capture());
+        assertEquals(expectedResponse, actualResponse);
+        assertEquals(expectedItems , argumentCaptor.getAllValues().get(0).item());
     }
 
 }

@@ -8,7 +8,7 @@ import com.muadmo.service.HelloWorldService;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 
-public class HelloWorldGetNameHandler {
+public class HelloWorldGetUserHandler {
 
     private DynamoDbClient dynamoDbClient = DynamoDbClient.builder().build();
 
