@@ -4,15 +4,23 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyRequestEvent;
 import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.muadmo.service.HelloWorldService;
-
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import com.muadmo.service.DynamoDbService;
 
 public class HelloWorldDeleteUserHandler {
-    private DynamoDbClient dynamoDbClient = DynamoDbClient.builder().build();
+
+    private DynamoDbService dynamoDbService;
+
+    public HelloWorldDeleteUserHandler(DynamoDbService dynamoDbService) {
+        this.dynamoDbService = dynamoDbService;
+    }
 
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
-        HelloWorldService helloWorldService = new HelloWorldService(dynamoDbClient);
-        return helloWorldService.deleteUserFromDatabase(request);
+        String nameId = request.getPathParameters().get("nameId");
+        if (!dynamoDbService.doesItemExist(nameId)) {
+            return new APIGatewayProxyResponseEvent().withStatusCode(404).withBody("{\"error\": \"user " + nameId + " does not exist\"}");
+        } else {
+            dynamoDbService.deleteItemFromTable(nameId);
+            return new APIGatewayProxyResponseEvent().withStatusCode(204);
+        }
     }
 }

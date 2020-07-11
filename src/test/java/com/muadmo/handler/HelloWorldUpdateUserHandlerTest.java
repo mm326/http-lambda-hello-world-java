@@ -1,6 +1,7 @@
 package com.muadmo.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import java.util.stream.Stream;
@@ -21,55 +22,80 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.muadmo.service.DynamoDbService;
 
 @ExtendWith(MockitoExtension.class)
-public class HelloWorldPostUserHandlerTest {
-    
-    private HelloWorldPostUserHandler underTest;
-    private APIGatewayProxyRequestEvent inputRequest;
+public class HelloWorldUpdateUserHandlerTest {
+
+    private HelloWorldUpdateUserHandler underTest;
     @Mock
     DynamoDbService dynamoDbService;
+
     
     @BeforeEach
     void setUp() {
-        underTest = new HelloWorldPostUserHandler(dynamoDbService); 
-        inputRequest = new APIGatewayProxyRequestEvent();
+        underTest = new HelloWorldUpdateUserHandler(dynamoDbService);
     }
-        
+    
     @Test
-    void shouldReturn201ForSuccessfulCreate() throws JsonMappingException, JsonProcessingException {
-        String inputJson = "{\"nameId\":\"test\", \"age\":\"24\", \"email\":\"test@email.com\"}";
-        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent()
-                .withStatusCode(201)
-                .withBody(inputJson);
-        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest.withBody(inputJson).withHeaders(Map.of("Content-Type", "application/json")));
+    void shouldReturn404ForUnkownUser() throws JsonMappingException, JsonProcessingException {
+        String nameId = "test2";
+        String inputBody = "{\"nameId\":\"test2\", \"age\":\"25\", \"email\":\"test@email.com\"}";
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(404).withBody("{\"error\": \"user test2 does not exist\"}");
+        when(dynamoDbService.doesItemExist(nameId)).thenReturn(false);
+        APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent()
+                .withPathParameters(Map.of("nameId", "test2"))
+                .withHeaders(Map.of("Content-Type", "application/json"))
+                .withBody(inputBody);
+        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest);
         assertEquals(expectedResponse, actualResponse);
     }
-        
+    
+    @ParameterizedTest
+    @MethodSource("inputBody")
+    void shouldReturn400ForNoBody(APIGatewayProxyRequestEvent inputRequest) throws JsonMappingException, JsonProcessingException {
+        String nameId = "test";
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("{\"error\": \"No body provided\"}");
+        when(dynamoDbService.doesItemExist(nameId)).thenReturn(true);
+        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest);
+        assertEquals(expectedResponse, actualResponse);
+    }
+    
     @Test
     void shouldReturn400ForNoHeaders() throws JsonMappingException, JsonProcessingException {
+        String nameId = "test";
         String inputBody = "{\"nameId\":\"test2\", \"age\":\"25\", \"email\":\"test2@email.com\"}";
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("{\"error\": \"No headers provided\"}");
+        when(dynamoDbService.doesItemExist(nameId)).thenReturn(true);
         APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent()
                 .withPathParameters(Map.of("nameId", "test"))
                 .withBody(inputBody);
         APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest);
         assertEquals(expectedResponse, actualResponse);
     }
+    
+    @Test
+    void shouldReturn204ForSuccessfulUpdate() throws JsonMappingException, JsonProcessingException {
+        String nameId = "test";
+        String inputBody = "{\"nameId\":\"test2\", \"age\":\"25\", \"email\":\"test2@email.com\"}";
+        APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent()
+                .withPathParameters(Map.of("nameId", "test"))
+                .withHeaders(Map.of("Content-Type", "application/json"))
+                .withBody(inputBody);
+        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
+        when(dynamoDbService.doesItemExist(nameId)).thenReturn(true);
+        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest.withBody(inputBody));
+        assertEquals(expectedResponse, actualResponse);
+    }
+    
     @Test
     void shouldReturn415ForBadContentType() throws JsonMappingException, JsonProcessingException {
+        String nameId = "test";
         String inputBody = "{\"nameId\":\"test2\", \"age\":\"25\", \"email\":\"test2@email.com\"}";
         APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent()
                 .withPathParameters(Map.of("nameId", "test"))
                 .withHeaders(Map.of("Content-Type", "application/text"))
                 .withBody(inputBody);
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(415);
+        when(dynamoDbService.doesItemExist(nameId)).thenReturn(true);
         APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest.withBody(inputBody));
-        assertEquals(expectedResponse, actualResponse);
-    }
-    @ParameterizedTest
-    @MethodSource("inputBody")
-    void shouldReturn400ForNoBody(APIGatewayProxyRequestEvent inputRequest) throws JsonMappingException, JsonProcessingException {
-        APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("{\"error\": \"No body provided\"}");
-        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest);
         assertEquals(expectedResponse, actualResponse);
     }
     
@@ -79,5 +105,4 @@ public class HelloWorldPostUserHandlerTest {
                 Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("Content-Type", "application/json")).withBody("{}"))
         );
     }
-    
 }

@@ -6,14 +6,14 @@ Globals:
   Function:
     Runtime: java11
     MemorySize: 512
-    Timeout: 10
+    Timeout: 30
     
 Resources:
 
   HelloWorldPostUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldPostUserHandler::handle
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -33,7 +33,7 @@ Resources:
   HelloWorldGetUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldGetUserHandler::handle
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -53,7 +53,7 @@ Resources:
   HelloWorldGetAllUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldGetAllUserHandler::handle
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -73,7 +73,7 @@ Resources:
   HelloWorldDeleteUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldDeleteUserHandler::handle
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -93,7 +93,7 @@ Resources:
   HelloWorldUpdateUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldUpdateUserHandler::handle
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -113,7 +113,7 @@ Resources:
   HelloWorldUpdateUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldUpdateUserHandler::handle
+      Handler: com.muadmo.handler.HelloWorldHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
