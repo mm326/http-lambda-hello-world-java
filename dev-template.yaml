@@ -6,16 +6,16 @@ Globals:
   Function:
     Runtime: java11
     MemorySize: 512
-    Timeout: 30
+    Timeout: 10
     
 Resources:
 
   HelloWorldPostUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.HelloWorldPostUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -33,15 +33,15 @@ Resources:
   HelloWorldGetUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.HelloWorldGetUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
           StageName: Dev
           Properties:
-            Path: /users/{nameId}
+            Path: /
             Method: get
       Environment:
         Variables:
@@ -53,9 +53,9 @@ Resources:
   HelloWorldGetAllUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.HelloWorldGetAllUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -73,9 +73,9 @@ Resources:
   HelloWorldDeleteUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.HelloWorldDeleteUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -93,9 +93,9 @@ Resources:
   HelloWorldUpdateUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.HelloWorldUpdateUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
@@ -113,9 +113,9 @@ Resources:
   HelloWorldUpdateUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.HelloWorldUpdateUserHandler::handle
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
+      AutoPublishAlias: dev
       Events:
         MyApiDev:
           Type: Api
