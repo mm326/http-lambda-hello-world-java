@@ -17,13 +17,12 @@ public class PostUserHandler {
        this.dynamoDbService = dynamoDbService;
     }
 
-
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
         if (request.getHeaders() == null) {
             return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("{\"error\": \"No headers provided\"}");
         } else if (request.getBody() == null || request.getBody().equals("{}")) {
             return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("{\"error\": \"No body provided\"}");
-        } else if (!request.getHeaders().get("Content-Type").equals("application/json")) {
+        } else if (request.getHeaders().get("content-type") == null || !request.getHeaders().get("content-type").equals("application/json")) {
             return new APIGatewayProxyResponseEvent().withStatusCode(415);
         } else {
             dynamoDbService.putItemIntoTable(request.getBody());

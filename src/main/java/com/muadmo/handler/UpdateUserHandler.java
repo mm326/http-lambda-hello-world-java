@@ -29,9 +29,10 @@ public class UpdateUserHandler {
                     .withBody("{\"error\": \"No headers provided\"}");
         } else if (request.getBody() == null || request.getBody().equals("{}")) {
             return new APIGatewayProxyResponseEvent().withStatusCode(400).withBody("{\"error\": \"No body provided\"}");
-        } else if (headers.get("Content-Type") == null || !headers.get("Content-Type").equals("application/json")) {
+        } else if (headers.get("content-type") == null || !headers.get("content-type").equals("application/json")) {
             return new APIGatewayProxyResponseEvent().withStatusCode(415);
         } else {
+            dynamoDbService.updateItemInTable(nameId, request.getBody());
             return new APIGatewayProxyResponseEvent().withStatusCode(204);
         }
     }

@@ -77,7 +77,7 @@ public class UpdateUserHandlerTest {
         String inputBody = "{\"nameId\":\"test2\", \"age\":\"25\", \"email\":\"test2@email.com\"}";
         APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent()
                 .withPathParameters(Map.of("nameId", "test"))
-                .withHeaders(Map.of("Content-Type", "application/json"))
+                .withHeaders(Map.of("content-type", "application/json"))
                 .withBody(inputBody);
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(204);
         when(dynamoDbService.doesItemExist(nameId)).thenReturn(true);
@@ -101,8 +101,8 @@ public class UpdateUserHandlerTest {
     
     private static Stream<Arguments> inputBody() {
         return Stream.of(
-                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("Content-Type", "application/json"))),
-                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("Content-Type", "application/json")).withBody("{}"))
+                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("content-type", "application/json"))),
+                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("content-type", "application/json")).withBody("{}"))
         );
     }
 }
