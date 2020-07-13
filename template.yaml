@@ -1,20 +1,20 @@
 AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
-Description: Hello World lambda
+Description: User template
 
 Globals:
   Function:
     Runtime: java11
-    MemorySize: 512
-    Timeout: 30
+    MemorySize: 3008
+    Timeout: 10
     
 Resources:
 
-  HelloWorldPostUserLambdaDev:
+  PostUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
       Handler: com.muadmo.handler.MainHandler::route
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      CodeUri: target/userLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
         MyApiDev:
@@ -30,11 +30,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UserTableDev
             
-  HelloWorldGetUserLambdaDev:
+  GetUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
       Handler:  com.muadmo.handler.MainHandler::route
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      CodeUri: target/userLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
         MyApiDev:
@@ -50,11 +50,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UserTableDev
 
-  HelloWorldGetAllUserLambdaDev:
+  GetAllUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
       Handler:  com.muadmo.handler.MainHandler::route
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      CodeUri: target/userLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
         MyApiDev:
@@ -70,11 +70,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UserTableDev
             
-  HelloWorldDeleteUserLambdaDev:
+  DeleteUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
       Handler:  com.muadmo.handler.MainHandler::route
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      CodeUri: target/userLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
         MyApiDev:
@@ -90,11 +90,11 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref UserTableDev
 
-  HelloWorldUpdateUserLambdaDev:
+  UpdateUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
       Handler:  com.muadmo.handler.MainHandler::route
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
+      CodeUri: target/userLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
         MyApiDev:

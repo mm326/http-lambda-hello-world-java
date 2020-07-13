@@ -5,33 +5,35 @@ import com.amazonaws.services.lambda.runtime.events.APIGatewayProxyResponseEvent
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.muadmo.di.DaggerLambdaComponent;
-import com.muadmo.service.DynamoDbService;
-
+import com.muadmo.di.LambdaComponent;
 
 public class MainHandler {
 
-//    private UpdateUserHandler updateUserHandler;
-//    private DeleteUserHandler deleteHandler;
-//    private GetAllUserHandler getAllUserHandler;
-//    private GetUserHandler getHandler;
-//    private PostUserHandler postHandler;
+    private UpdateUserHandler updateUserHandler;
+    private DeleteUserHandler deleteHandler;
+    private GetAllUserHandler getAllUserHandler;
+    private GetUserHandler getUserHandler;
+    private PostUserHandler postHandler;
 
     public APIGatewayProxyResponseEvent route(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
 
-        DynamoDbService dynamoDbService = DaggerLambdaComponent.builder().build().dynamoDbService();
-        System.out.println(request);
+        LambdaComponent component = DaggerLambdaComponent.builder().build();
             if (request.getHttpMethod().equals("GET") && request.getPath().equals("/users")) {
-                return new GetAllUserHandler(dynamoDbService).handle(request);
+                getAllUserHandler  = component.getAllUserHandler();
+                return getAllUserHandler.handle(request);
             } else if (request.getHttpMethod().equals("GET") && request.getResource().equals("/users/{nameId}")) {
-                return new GetUserHandler(dynamoDbService).handle(request);
+                getUserHandler = component.getHandler(); 
+                return getUserHandler.handle(request);
             } else if (request.getHttpMethod().equals("PUT") && request.getResource().equals("/users/{nameId}")) {
-                return new UpdateUserHandler(dynamoDbService).handle(request);
+                updateUserHandler = component.updateHandler();
+                return updateUserHandler.handle(request);
             } else if (request.getHttpMethod().equals("DELETE") && request.getResource().equals("/users/{nameId}")) {
-                return new DeleteUserHandler(dynamoDbService).handle(request);
+                deleteHandler = component.deleteHandler();
+                return deleteHandler.handle(request);
             } else if (request.getHttpMethod().equals("POST") && request.getPath().equals("/users")) {
-                return new PostUserHandler(dynamoDbService).handle(request);
+                postHandler = component.postHandler();
+                return postHandler.handle(request);
             }
-        }
         return new APIGatewayProxyResponseEvent().withStatusCode(400) .withBody("{\"error\": \" No Lambda matched\"}");
     }
 }

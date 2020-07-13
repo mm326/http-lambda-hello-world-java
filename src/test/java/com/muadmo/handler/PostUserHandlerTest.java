@@ -40,7 +40,7 @@ public class PostUserHandlerTest {
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent()
                 .withStatusCode(201)
                 .withBody(inputJson);
-        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest.withBody(inputJson).withHeaders(Map.of("Content-Type", "application/json")));
+        APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest.withBody(inputJson).withHeaders(Map.of("content-type", "application/json")));
         assertEquals(expectedResponse, actualResponse);
     }
         
@@ -75,8 +75,8 @@ public class PostUserHandlerTest {
     
     private static Stream<Arguments> inputBody() {
         return Stream.of(
-                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("Content-Type", "application/json"))),
-                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("Content-Type", "application/json")).withBody("{}"))
+                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("content-type", "application/json"))),
+                Arguments.of(new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test")).withHeaders(Map.of("content-type", "application/json")).withBody("{}"))
         );
     }
     
