@@ -5,6 +5,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -19,17 +20,24 @@ import com.muadmo.service.DynamoDbService;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @ExtendWith(MockitoExtension.class)
-public class HelloWorldGetUserHandlerTest {
+public class GetUserHandlerTest {
 
     @Mock
     DynamoDbService dynamoDbService;
+    
+    private GetUserHandler underTest;
+    
+    @BeforeEach
+    void setUp() {
+         underTest = new GetUserHandler(dynamoDbService);  
+    }
     
     @Test
     void shouldReturn404ForUnkownUser() throws JsonMappingException, JsonProcessingException {
         String nameId = "test2";
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(404).withBody("{\"error\": \"user test2 does not exist\"}");
         APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test2"));
-        HelloWorldGetUserHandler underTest = new HelloWorldGetUserHandler(dynamoDbService);      
+            
         when(dynamoDbService.doesItemExist(nameId)).thenReturn(false);
         APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest);
         assertEquals(expectedResponse, actualResponse);
@@ -41,7 +49,6 @@ public class HelloWorldGetUserHandlerTest {
         String expectedJson = "{\"nameId\":\"test\",\"age\":\"24\",\"email\":\"test@email.com\"}";
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(expectedJson);
         APIGatewayProxyRequestEvent inputRequest = new APIGatewayProxyRequestEvent().withPathParameters(Map.of("nameId", "test"));
-        HelloWorldGetUserHandler underTest = new HelloWorldGetUserHandler(dynamoDbService);      
         when(dynamoDbService.doesItemExist(nameId)).thenReturn(true);
         Map<String, AttributeValue> item = Map.of(
                 "nameId", AttributeValue.builder().s(nameId).build(),

@@ -45,11 +45,9 @@ public class DynamoDbServiceTest {
     
     private DynamoDbService underTest;
     
-    private static String TABLE_NAME = "table";
-    
     @BeforeEach
     void setUp() {
-        underTest =  new DynamoDbService(dynamoDbClient, TABLE_NAME);
+        underTest =  new DynamoDbService(dynamoDbClient);
     }
     @Test
     void shouldGetSingleItemFromTable() {
