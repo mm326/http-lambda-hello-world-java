@@ -1,6 +1,10 @@
 package com.muadmo.handler;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import org.json.JSONObject;
 
@@ -12,25 +16,27 @@ import com.muadmo.service.DynamoDbService;
 
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class HelloWorldGetUserHandler {
+public class GetAllUserHandler {
 
     private DynamoDbService dynamoDbService;
 
-    public HelloWorldGetUserHandler(DynamoDbService dynamoDbService) {
+    @Inject
+    public GetAllUserHandler(DynamoDbService dynamoDbService) {
         this.dynamoDbService = dynamoDbService;
     }
 
     public APIGatewayProxyResponseEvent handle(APIGatewayProxyRequestEvent request) throws JsonMappingException, JsonProcessingException {
-        String nameId = request.getPathParameters().get("nameId");
+        List<Map<String, AttributeValue>> items = dynamoDbService.getAllItemsFromTable();
+        if(items.isEmpty()) {
+            return new APIGatewayProxyResponseEvent().withBody("{users:[]}").withStatusCode(200);
+        }
+        List<JSONObject> jsonItems = items.stream()
+        .map(this::mapItemToJsonObject)
+        .collect(Collectors.toList());
         
-        if (!dynamoDbService.doesItemExist(nameId)) {
-            return new APIGatewayProxyResponseEvent().withStatusCode(404).withBody("{\"error\": \"user "+ nameId + " does not exist\"}");
-        }
-        else {
-            Map<String, AttributeValue> item = dynamoDbService.getItemFromTable(nameId);
-            String body = mapItemToJsonObject(item).toString();
-            return new APIGatewayProxyResponseEvent().withStatusCode(200).withBody(body);
-        }
+        JSONObject body = new JSONObject();
+        body.put("users", jsonItems);
+        return new APIGatewayProxyResponseEvent().withBody(body.toString()).withStatusCode(200);
     }
     
     private JSONObject mapItemToJsonObject(Map<String, AttributeValue> item) {
@@ -40,4 +46,5 @@ public class HelloWorldGetUserHandler {
         jsonObject.put("email", item.get("email").s());
         return jsonObject;
     }
+    
 }

@@ -22,16 +22,16 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.muadmo.service.DynamoDbService;
 
 @ExtendWith(MockitoExtension.class)
-public class HelloWorldUpdateUserHandlerTest {
+public class UpdateUserHandlerTest {
 
-    private HelloWorldUpdateUserHandler underTest;
+    private UpdateUserHandler underTest;
     @Mock
     DynamoDbService dynamoDbService;
 
     
     @BeforeEach
     void setUp() {
-        underTest = new HelloWorldUpdateUserHandler(dynamoDbService);
+        underTest = new UpdateUserHandler(dynamoDbService);
     }
     
     @Test

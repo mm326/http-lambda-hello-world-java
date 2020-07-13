@@ -21,21 +21,21 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.muadmo.service.DynamoDbService;
 
 @ExtendWith(MockitoExtension.class)
-public class HelloWorldPostUserHandlerTest {
+public class PostUserHandlerTest {
     
-    private HelloWorldPostUserHandler underTest;
+    private PostUserHandler underTest;
     private APIGatewayProxyRequestEvent inputRequest;
     @Mock
     DynamoDbService dynamoDbService;
     
     @BeforeEach
     void setUp() {
-        underTest = new HelloWorldPostUserHandler(dynamoDbService); 
+        underTest = new PostUserHandler(dynamoDbService); 
         inputRequest = new APIGatewayProxyRequestEvent();
     }
         
     @Test
-    void shouldReturn201ForSuccessfulCreate() throws JsonMappingException, JsonProcessingException {
+    void shouldReturn201() throws JsonMappingException, JsonProcessingException {
         String inputJson = "{\"nameId\":\"test\", \"age\":\"24\", \"email\":\"test@email.com\"}";
         APIGatewayProxyResponseEvent expectedResponse = new APIGatewayProxyResponseEvent()
                 .withStatusCode(201)

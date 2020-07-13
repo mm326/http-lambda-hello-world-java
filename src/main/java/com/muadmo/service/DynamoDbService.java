@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.json.JSONObject;
 
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -23,7 +25,8 @@ public class DynamoDbService {
     private static String TABLE_NAME = System.getenv("USER_TABLE");
     private DynamoDbClient dynamoDbClient;
 
-    public DynamoDbService(DynamoDbClient dynamoDbClient, String TABLE_NAME) {
+    @Inject
+    public DynamoDbService(DynamoDbClient dynamoDbClient) {
         this.dynamoDbClient = dynamoDbClient;
     }
 
@@ -68,7 +71,6 @@ public class DynamoDbService {
                 .build();
         
         QueryResponse queryResponse = dynamoDbClient.query(queryRequest);
-        System.out.println("RESP "+queryResponse);
         return !queryResponse.items().isEmpty();
     }
 

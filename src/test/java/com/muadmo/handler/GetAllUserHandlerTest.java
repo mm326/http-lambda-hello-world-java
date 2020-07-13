@@ -20,10 +20,11 @@ import com.muadmo.service.DynamoDbService;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 @ExtendWith(MockitoExtension.class)
-public class HelloWorldGetAllUserHandlerTest {
+public class GetAllUserHandlerTest {
 
     @Mock
     private DynamoDbService dynamoDbService;
+    
     @Test
     void shouldReturn200ForSuccessfulGet() throws JsonMappingException, JsonProcessingException {
         String expectedJson = "{\"users\":[{\"nameId\":\"test\",\"age\":\"24\",\"email\":\"test@email.com\"},{\"nameId\":\"test2\",\"age\":\"41\",\"email\":\"test2@email.com\"}]}";
@@ -40,7 +41,7 @@ public class HelloWorldGetAllUserHandlerTest {
                 "email", AttributeValue.builder().s("test2@email.com").build());
         List<Map<String, AttributeValue>> items = List.of(item1, item2);
         
-        HelloWorldGetAllUserHandler underTest = new HelloWorldGetAllUserHandler(dynamoDbService);      
+        GetAllUserHandler underTest = new GetAllUserHandler(dynamoDbService);      
         when(dynamoDbService.getAllItemsFromTable()).thenReturn(items);
         APIGatewayProxyResponseEvent actualResponse = underTest.handle(inputRequest);
         assertEquals(expectedResponse, actualResponse);

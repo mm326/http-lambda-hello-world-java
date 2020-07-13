@@ -13,7 +13,7 @@ Resources:
   HelloWorldPostUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler: com.muadmo.handler.MainHandler::route
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -33,7 +33,7 @@ Resources:
   HelloWorldGetUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler:  com.muadmo.handler.MainHandler::route
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -53,7 +53,7 @@ Resources:
   HelloWorldGetAllUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler:  com.muadmo.handler.MainHandler::route
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -73,7 +73,7 @@ Resources:
   HelloWorldDeleteUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler:  com.muadmo.handler.MainHandler::route
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
@@ -93,27 +93,7 @@ Resources:
   HelloWorldUpdateUserLambdaDev:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
-      CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
-      AutoPublishAlias: Dev
-      Events:
-        MyApiDev:
-          Type: Api
-          StageName: Dev
-          Properties:
-            Path: /users/{nameId}
-            Method: put
-      Environment:
-        Variables:
-          USER_TABLE: !Ref UserTableDev
-      Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref UserTableDev
-
-  HelloWorldUpdateUserLambdaDev:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: com.muadmo.handler.HelloWorldHandler::handle
+      Handler:  com.muadmo.handler.MainHandler::route
       CodeUri: target/helloWorldLambda-1.0-SNAPSHOT.zip
       AutoPublishAlias: Dev
       Events:
